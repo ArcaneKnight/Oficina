@@ -1,27 +1,27 @@
 #include <stdio.h>
-#include "lcrandom.h"
 
-int main ()
+long seed, multi=40692, increase=127, module=10000000; /* valores default da semente, multiplicador, incremento e módulo */
+long result; /* resultado do gerador */
+
+long lcrandom ()
 {
-  long V[100], max=0;
-  for (int i=0; i<1000000; i++)
-    {
-      num = lcrandom();
-      V[num]++;
-      if (max < V[num])
-	{
-	  max = V[num];
-	}
-    }
+  result = ((multi*result) + increase)%module;
+  return result;
+}
 
-  printf ("   0   10   20   30   40   50   60   70   80   90   100\n");
-  printf ("   +----+----+----+----+----+----+----+----+----+----+\n");
-  for (int i=0; i<100; i++)
-    {
-      printf ("%d |", i);
-      for (int j=0; j<((V[i]*100/max)/2); j++)
-	printf ("*");
-      printf ("\n");
-    }
+void lcrandom_seed (long s)
+{
+  result = seed;
+}
+
+long lcrandom_max ()
+{
   
+}
+
+void lcrandom_parms (long A, long C, long M)
+{
+  multi = A;
+  increase = C;
+  module = M;
 }

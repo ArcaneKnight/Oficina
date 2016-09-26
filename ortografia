@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+char **dict;
+
+int main ()
+{
+  FILE *arq;
+  size_t tam_M = 54;
+  char *c, carac, *inD;
+  int i;
+
+  arq = fopen ("usr/share/dict/brazilian", "r");
+  dict = malloc (sizeof(arq));
+  for (i=0; i++; i < sizeof(arq))
+    {
+      fgets (c, 55, arq);
+      tolower((int*)c);
+      dict[i] = (char *) malloc (sizeof(c));
+      dict[i] = c;
+    }
+  
+  qsort (dict, sizeof(arq), 54*sizeof(char), (int(*)(const void*,const void*)) strcmp);
+  
+  scanf("%c", &carac);
+  while (carac != EOF)
+    {
+      while ((carac < 65 || carac > 122 || (carac > 90 && carac < 97))  && (carac != EOF))
+	{
+	  putchar (carac);
+	  scanf("%c", &carac);
+	}
+
+      c = "";
+      while (((carac >= 65 && carac <= 90) || (carac >= 97 && carac <= 122)) && (carac != EOF))
+	{
+	  c = c + carac;
+	  scanf("%c", &carac);
+	}
+      
+      if (c != "")
+	{
+	  inD = (char*)bsearch (tolower((int*)c), dict, sizeof(arq), 54*sizeof(char), (int(*)(const void*,const void*)) strcmp);
+	  if (inD != NULL)
+	    puts(c);
+	  else
+	    printf ("[%s]", (char *)c);
+	}
+    }
+  fclose(arq);
+  free(dict);
+  return 0;
+}

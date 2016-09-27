@@ -17,7 +17,7 @@ int compara_string (void const *a, void const *b) /* função que arruma a tipag
 int main ()
 {
   FILE *arq; /* abrindo o arquivo do dicionário */
-  char *c, palavra[55], carac, *inD; /* duas variáveis para guardar strings, leitura de caracteres, verificação do bsearch */
+  char palavra[55], carac, *inD; /* duas variáveis para guardar strings, leitura de caracteres, verificação do bsearch */
   int i, j; /* contadores dos for */
   arq = fopen ("/usr/share/dict/brazilian", "r"); /* abre o arquivo e depois verifica erro */
   if (! arq)
@@ -35,34 +35,38 @@ int main ()
       strcpy (dict[i],palavra);
     }
   
-  qsort (dict, 275502, sizeof(char*), compara_string); //faz o sort de tudo
-  fclose(arq);
+   qsort (dict, 275502, sizeof(char*), compara_string); //faz o sort de tudo
  
+
   scanf("%c", &carac);
   while (carac != EOF)
     {
-      while ((carac < 65 || carac > 122 || (carac > 90 && carac < 97))  && (carac != EOF))
+      while ((carac < 'A' || carac > 'z' || (carac > 'Z' && carac < 'a'))  && (carac != EOF))
 	{
 	  putchar (carac);
 	  scanf("%c", &carac);
 	}
-
-      c = NULL;
-      while (((carac >= 65 && carac <= 90) || (carac >= 97 && carac <= 122)) && (carac != EOF))
+      
+      i = 0;
+      char* palavra = NULL;
+      while (((carac >= 'A' && carac <= 'Z') || (carac >= 'a' && carac <= 'z')) && (carac != EOF))
 	{
-	  c = c + carac;
+	  palavra[i] = carac;
 	  scanf("%c", &carac);
 	}
+      palavra[i+1] = '\0';
+      printf ("%s\n", palavra);
       
-      if (c != NULL)
+      if (palavra != NULL)
 	{
-	  inD = (char*)bsearch (c, dict, 275502, sizeof(char *), compara_string);
+	  inD = (char*)bsearch (palavra, dict, 275502, sizeof(char *), compara_string);
 	  if (inD != NULL)
-	    puts(c);
+	    puts(palavra);
 	  else
-	    printf ("[%s]", (char *)c);
+	    printf ("[%s]", palavra);
 	}
     }
+  fclose(arq);
   free(dict);
   return 0;
 }

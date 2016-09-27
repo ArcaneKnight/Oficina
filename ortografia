@@ -9,9 +9,9 @@ char **dict; /* dict é um ponteiro para ponteiro de char que guardara o diciona
 
 int compara_string (void const *a, void const *b) /* função que arruma a tipagem de strcmp para uso no qsort e bsearch */
 {
-  const char *aa=*(const char**)a;
-  const char *bb=*(const char**)b;
-  return strcmp(aa,bb);
+  const char **aa=(const char**)a;
+  const char **bb=(const char**)b;
+  return strcmp(*aa,*bb);
 }
 
 int main ()
@@ -35,10 +35,9 @@ int main ()
       strcpy (dict[i],palavra);
     }
   
-  qsort (dict, 275502, 55*sizeof(char), compara_string); //faz o sort de tudo
-  printf ("%s\n", dict[157]);
+  qsort (dict, 275502, sizeof(char*), compara_string); //faz o sort de tudo
   fclose(arq);
-  
+ 
   scanf("%c", &carac);
   while (carac != EOF)
     {
@@ -48,7 +47,7 @@ int main ()
 	  scanf("%c", &carac);
 	}
 
-      c = NULL;;
+      c = NULL;
       while (((carac >= 65 && carac <= 90) || (carac >= 97 && carac <= 122)) && (carac != EOF))
 	{
 	  c = c + carac;
@@ -57,7 +56,7 @@ int main ()
       
       if (c != NULL)
 	{
-	  inD = (char*)bsearch (c, dict, 275502, 55*sizeof(char), compara_string);
+	  inD = (char*)bsearch (c, dict, 275502, sizeof(char *), compara_string);
 	  if (inD != NULL)
 	    puts(c);
 	  else

@@ -7,17 +7,22 @@
 
 char **dict; /* dict é um ponteiro para ponteiro de char que guardara o dicionario na memoria */
 
-int compara_string (void const *a, void const *b) /* função que arruma a tipagem de strcmp para uso no qsort e bsearch */
+int compara_string (void const *a, void const *b) /* função que arruma a tipagem de strcmp para uso no qsort  */
 {
   const char **aa=(const char**)a;
   const char **bb=(const char**)b;
   return strcmp(*aa,*bb);
 }
 
+int compara_string2 (const void * a, const void * b) /* função que arruma a tipagem de strcmp para o bsearch */
+{
+  return strcmp (a, *(const char**) b);
+}
+
 int main ()
 {
   FILE *arq; /* abrindo o arquivo do dicionário */
-  char palavra[55], carac, *inD; /* duas variáveis para guardar strings, leitura de caracteres, verificação do bsearch */
+  char palavra[55], teste[55], carac, *inD; /* duas variáveis para guardar strings, leitura de caracteres, verificação do bsearch */
   int i, j; /* contadores dos for */
   arq = fopen ("/usr/share/dict/brazilian", "r"); /* abre o arquivo e depois verifica erro */
   if (! arq)
@@ -29,44 +34,46 @@ int main ()
   for (i=0;i < 275502; i++) /* aloca as palavras do dicionário para cada posição do vetor */
     {
       fscanf (arq, "%s", palavra);
-      dict[i] = malloc (55*sizeof(char));
+      dict[i] = malloc (55*sizeof(char)); /* aloca até o tamanho da maior palavra em português */
       for (j = 0; palavra[j]; j++)
-	palavra[j] = tolower(palavra[j]);
-      strcpy (dict[i],palavra);
+	palavra[j] = tolower(palavra[j]); /*faz o lower case de tudo */
+      strcpy (dict[i],palavra); /*copia as strings */
     }
   
-   qsort (dict, 275502, sizeof(char*), compara_string); //faz o sort de tudo
- 
-
-  scanf("%c", &carac);
+  qsort (dict, 275502, sizeof(char*), compara_string); //faz o sort de tudo
+  
+  
+  carac=getchar();
   while (carac != EOF)
     {
-      while ((carac < 'A' || carac > 'z' || (carac > 'Z' && carac < 'a'))  && (carac != EOF))
-	{
-	  putchar (carac);
-	  scanf("%c", &carac);
+      while (!isalpha(carac) && (carac != EOF)) // caso não seja letra, apenas escreve
+ 	{
+	  printf ("%c", carac);
+	  carac = getchar();
 	}
       
       i = 0;
-      char* palavra = NULL;
-      while (((carac >= 'A' && carac <= 'Z') || (carac >= 'a' && carac <= 'z')) && (carac != EOF))
+      memset(palavra,0,55); // zera o contador e a string
+      while (isalpha(carac) && (carac != EOF)) // caso seja letra, começa a arrumar a string para checagem
 	{
 	  palavra[i] = carac;
-	  scanf("%c", &carac);
+	  carac = getchar ();
+	  i++;
 	}
-      palavra[i+1] = '\0';
-      printf ("%s\n", palavra);
-      
-      if (palavra != NULL)
+      for (i=0; strlen(palavra); i++) //converte a palavra para lowercase para checagem
 	{
-	  inD = (char*)bsearch (palavra, dict, 275502, sizeof(char *), compara_string);
-	  if (inD != NULL)
-	    puts(palavra);
-	  else
+	  teste[i] = tolower(palavra[i]);
+	}
+      if (strlen(palavra)!=0) // caso tamanho da palavra seja 0, não há palavra para checar
+	{
+	  inD = (char*) bsearch (teste, dict, 275502, sizeof(char *), compara_string2); // checa se a palavra existe
+	  if (inD != NULL) // caso não seja nulo, imprime a palavra
+	    printf("%s", palavra);
+	  else // caso contrário, imprime entre parenteses
 	    printf ("[%s]", palavra);
 	}
     }
-  fclose(arq);
-  free(dict);
+  fclose(arq); // fecha o dicionario
+  free(dict); // libera a memória alocada
   return 0;
 }

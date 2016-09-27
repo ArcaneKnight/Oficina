@@ -1,30 +1,39 @@
+/* Programa feito por Cesar Augusto Alves Camillo GRR 20160169 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-char **dict;
+char **dict; /* dict é um ponteiro para ponteiro de char que guardara o dicionario na memoria */
+
+int compara_string (void const *a, void const *b) /* função que arruma a tipagem de strcmp para uso no qsort e bsearch */
+{
+  char const *aa = (char const *)a;
+  char const *bb = (char const *)b;
+  
+  return strcmp (aa,bb);
+}
 
 int main ()
 {
-  FILE *arq;
-  char *c, carac, *inD;
-  int i;
-  arq = fopen ("/usr/share/dict/brazilian", "r");
+  FILE *arq; /* abrindo o arquivo do dicionário */
+  char *c, palavra[55], carac, *inD; /* duas variáveis para guardar strings, leitura de caracteres, verificação do bsearch */
+  int i; /* contador do for */
+  arq = fopen ("/usr/share/dict/brazilian", "r"); /* abre o arquivo e depois verifica erro */
   if (! arq)
     {
       perror ("Erro ao abrir dicionário.");
       exit (1);
     }
-  dict = calloc (275502, sizeof(char*));
-  c = NULL;
-  for (i=0;i < 275502; i++)
+  dict = calloc (275502, sizeof(char*)); /* aloca o vetor para todas as palavras do dicionário */
+  for (i=0;i < 275502; i++) /* aloca as palavras do dicionário para cada posição do vetor */
     {
-      fscanf (arq, "%[^\n]s", c);
-      dict[i] = malloc (((unsigned)strlen(c)+1)*sizeof(char));
-      strcpy (dict[i],c);
+      fscanf (arq, "%[^\n]s", palavra);
+      dict[i] = malloc (((unsigned)strlen(palavra)+1)*sizeof(char));
+      strcpy (dict[i],palavra);
     }
   
-  qsort (dict, 275502, 55*sizeof(char), (int(*)(const void*,const void*)) strcmp);
+  qsort (dict, 275502, 55*sizeof(char), compara_string);
   
   scanf("%c", &carac);
   while (carac != EOF)
@@ -44,7 +53,7 @@ int main ()
       
       if (c != NULL)
 	{
-	  inD = (char*)bsearch (c, dict, 275502, 55*sizeof(char), (int(*)(const void*,const void*)) strcmp);
+	  inD = (char*)bsearch (c, dict, 275502, 55*sizeof(char), compara_string);
 	  if (inD != NULL)
 	    puts(c);
 	  else
